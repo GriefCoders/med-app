@@ -3,6 +3,11 @@ import { AppController } from './app.controller';
 import { ConfigModule } from '@nestjs/config';
 import config from 'src/config/config';
 import { PrismaModule } from '../prisma/prisma.module';
+import { UserModule } from '../user/user.module';
+import { TokenModule } from 'src/token/token.module';
+import { PasswordModule } from '../password/password.module';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -11,6 +16,7 @@ import { PrismaModule } from '../prisma/prisma.module';
       load: [config],
     }),
     PrismaModule,
+    UserModule,
   ],
   controllers: [AppController],
 })
