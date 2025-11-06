@@ -4,9 +4,11 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
+import { UserModule } from 'src/modules/user/user.module';
 
 @Module({
   imports: [
+    UserModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => ({

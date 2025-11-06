@@ -8,6 +8,7 @@ import { TokenModule } from 'src/token/token.module';
 import { PasswordModule } from '../password/password.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
@@ -15,8 +16,10 @@ import { JwtModule } from '@nestjs/jwt';
       isGlobal: true,
       load: [config],
     }),
-    PrismaModule,
+    AuthModule,
     UserModule,
+    TokenModule,
+    PrismaModule,
   ],
   controllers: [AppController],
 })
