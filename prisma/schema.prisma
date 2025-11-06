@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String           @id @default(cuid()) @map("id")
+  fullName        String           @map("full_name")
+  password        String           @map("password")
+  email           String           @unique @map("email")
+  roleId          String           @map("role_id")
+  role            Role             @map("role")
+  roomNumber      String?          @map("room_number")
+  siteId          String           @map("site_id")
+  site            Site             @relation(fields: [siteId], references: [id])
+  sentRequests    ServiceRequest[] @relation("sent_requests")
+  assignedRequests ServiceRequest[] @relation("assigned_requests")
+
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  USER
+  ENGINEER
+}
+
+model Site {
+  id        String        @id @default(cuid()) @map("id")
+  name      String        @map("name")
+  address   String        @map("address")
+  code      String        @unique @map("code")
+  users     User[]
+  equipment Equipment[]
+  requests  ServiceRequest[]
+
+  @@map("sites")
+}
+
+model Equipment {
+  id               String          @id @default(cuid()) @map("id")
+  name             String          @map("name")
+  description      String?         @map("description")
+  inventoryNumber  String?         @map("inventory_number")
+  siteId           String          @map("site_id")
+  site             Site            @relation(fields: [siteId], references: [id])
+  serialNumber     String?         @map("serial_number")
+  state            String?         @map("state")
+  roomNumber       String?         @map("room_number")
+  repairs          Repair[]
+  serviceRequests  ServiceRequest[]
+
+  @@map("equipments")
+}
+
+model ServiceRequest {
+  id          String   @id @default(cuid()) @map("id")
+  senderId    String   @map("sender_id")
+  sender      User     @relation("sent_requests", fields: [senderId], references: [id])
+  assigneeId  String?  @map("assignee_id")
+  assignee    User?    @relation("assigned_requests", fields: [assigneeId], references: [id])
+  summary     String   @map("summary")
+  equipmentId String?  @map("equipment_id")
+  equipment   Equipment? @relation(fields: [equipmentId], references: [id])
+  description String?  @map("description")
+  type        String?  @map("type")
+  priority    String?  @map("priority")
+  status      String?  @map("status")
+  siteId      String   @map("site_id")
+  site        Site     @relation(fields: [siteId], references: [id])
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("service_requests")
+}
+
+model Repair {
+  id          String     @id @default(cuid()) @map("id")
+  date        DateTime   @map("date")
+  equipmentId String     @map("equipment_id")
+  equipment   Equipment  @relation(fields: [equipmentId], references: [id])
+
+  @@map("repairs")
+}
