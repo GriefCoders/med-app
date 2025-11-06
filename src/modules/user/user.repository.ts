@@ -6,10 +6,20 @@ export class UserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findOneById(id: string) {
-    return this.prisma.user.findUnique({ where: { id } });
+    return this.prisma.user.findUnique({
+      where: { id },
+      include: {
+        site: true,
+      },
+    });
   }
 
   async findOneByEmail(email: string) {
-    return this.prisma.user.findUnique({ where: { email } });
+    return this.prisma.user.findUnique({
+      where: { email },
+      include: {
+        site: true,
+      },
+    });
   }
 }
