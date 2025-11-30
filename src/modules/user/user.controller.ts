@@ -1,13 +1,15 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/guards/auth.guard';
 import { DecodeUser } from 'src/decorators/decode-user.decorator';
 import type { User } from 'src/types/user';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from '@prisma/client';
+import { CreateUserDto } from './dto/create-user.dto';
 
+@ApiTags('Пользователи')
 @Controller('user')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
@@ -22,5 +24,14 @@ export class UserController {
       ...user,
       password: undefined,
     };
+  }
+
+  @Post()
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Создание пользователя (только администратор)' })
+  @ApiBody({ type: CreateUserDto })
+  async create(@Body() dto: CreateUserDto) {
+    return this.userService.create(dto);
   }
 }
