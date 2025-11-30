@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { PasswordModule } from '../password/password.module';
 import { UserModule } from '../user/user.module';
-import { TokenModule } from 'src/token/token.module';
+import { TokenModule } from 'src/modules/token/token.module';
 
 @Module({
   imports: [UserModule, TokenModule, PasswordModule],
