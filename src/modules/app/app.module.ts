@@ -8,6 +8,7 @@ import { TokenModule } from 'src/modules/token/token.module';
 import { AuthModule } from '../auth/auth.module';
 import { SiteModule } from '../site/site.module';
 import { EquipmentModule } from '../equipment/equipment.module';
+import { ServiceRequestModule } from '../service-request/service-request.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { EquipmentModule } from '../equipment/equipment.module';
     PrismaModule,
     SiteModule,
     EquipmentModule,
+    ServiceRequestModule,
   ],
   controllers: [AppController],
 })

@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { ServiceRequestStatus } from 'src/types/service-request-status';
 
 export const seedServiceRequest = async (
   prisma: PrismaClient,
@@ -25,7 +26,7 @@ export const seedServiceRequest = async (
       description: 'Экран не включается после нажатия кнопки питания',
       type: 'инцидент',
       priority: 'средний',
-      status: 'открыта',
+      status: ServiceRequestStatus.OPEN,
       siteId,
     },
   });

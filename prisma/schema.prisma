@@ -40,6 +40,12 @@ model Site {
   @@map("sites")
 }
 
+enum ServiceRequestStatus {
+  OPEN
+  IN_PROGRESS
+  CLOSED
+}
+
 model Equipment {
   id               String          @id @default(cuid()) @map("id")
   name             String          @map("name")
@@ -57,22 +63,22 @@ model Equipment {
 }
 
 model ServiceRequest {
-  id          String   @id @default(cuid()) @map("id")
-  senderId    String   @map("sender_id")
-  sender      User     @relation("sent_requests", fields: [senderId], references: [id])
-  assigneeId  String?  @map("assignee_id")
-  assignee    User?    @relation("assigned_requests", fields: [assigneeId], references: [id])
-  summary     String   @map("summary")
-  equipmentId String?  @map("equipment_id")
-  equipment   Equipment? @relation(fields: [equipmentId], references: [id])
-  description String?  @map("description")
-  type        String?  @map("type")
-  priority    String?  @map("priority")
-  status      String?  @map("status")
-  siteId      String   @map("site_id")
-  site        Site     @relation(fields: [siteId], references: [id])
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id          String               @id @default(cuid()) @map("id")
+  senderId    String               @map("sender_id")
+  sender      User                 @relation("sent_requests", fields: [senderId], references: [id])
+  assigneeId  String?              @map("assignee_id")
+  assignee    User?                @relation("assigned_requests", fields: [assigneeId], references: [id])
+  summary     String               @map("summary")
+  equipmentId String?              @map("equipment_id")
+  equipment   Equipment?           @relation(fields: [equipmentId], references: [id])
+  description String?              @map("description")
+  type        String?              @map("type")
+  priority    String?              @map("priority")
+  status      ServiceRequestStatus @map("status")
+  siteId      String               @map("site_id")
+  site        Site                 @relation(fields: [siteId], references: [id])
+  createdAt   DateTime             @default(now()) @map("created_at")
+  updatedAt   DateTime             @updatedAt @map("updated_at")
 
   @@map("service_requests")
 }
