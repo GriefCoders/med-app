@@ -7,6 +7,7 @@ import { UserModule } from '../user/user.module';
 import { TokenModule } from 'src/modules/token/token.module';
 import { AuthModule } from '../auth/auth.module';
 import { SiteModule } from '../site/site.module';
+import { EquipmentModule } from '../equipment/equipment.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { SiteModule } from '../site/site.module';
     TokenModule,
     PrismaModule,
     SiteModule,
+    EquipmentModule,
   ],
   controllers: [AppController],
 })
