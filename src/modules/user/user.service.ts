@@ -7,6 +7,7 @@ import { UserRepository } from './user.repository';
 import { PasswordService } from '../password/password.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -73,5 +74,64 @@ export class UserService {
       ...user,
       password: undefined,
     }));
+  }
+
+  async update(id: string, dto: UpdateUserDto) {
+    const user = await this.userRepository.findOneById(id);
+
+    if (!user) {
+      throw new NotFoundException('Пользователь не найден');
+    }
+
+    if (dto.email && dto.email !== user.email) {
+      const existingByEmail = await this.userRepository.findOneByEmail(
+        dto.email,
+      );
+
+      if (existingByEmail) {
+        throw new ConflictException(
+          'Пользователь с таким email уже существует',
+        );
+      }
+    }
+
+    if (dto.siteId && dto.siteId !== user.siteId) {
+      const site = await this.prisma.site.findUnique({
+        where: { id: dto.siteId },
+      });
+
+      if (!site) {
+        throw new NotFoundException('Отделение не найдено');
+      }
+    }
+
+    let hashedPassword: string | undefined;
+    if (dto.password) {
+      hashedPassword = await this.passwordService.hashPassword(dto.password);
+    }
+
+    const updatedUser = await this.userRepository.update(id, {
+      fullName: dto.fullName ?? undefined,
+      email: dto.email ?? undefined,
+      password: hashedPassword,
+      role: dto.role ?? undefined,
+      siteId: dto.siteId ?? undefined,
+      roomNumber: dto.roomNumber ?? undefined,
+    });
+
+    return {
+      ...updatedUser,
+      password: undefined,
+    };
+  }
+
+  async delete(id: string) {
+    const user = await this.userRepository.findOneById(id);
+
+    if (!user) {
+      throw new NotFoundException('Пользователь не найден');
+    }
+
+    await this.userRepository.delete(id);
   }
 }

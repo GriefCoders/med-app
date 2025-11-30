@@ -85,4 +85,30 @@ export class UserRepository {
       },
     });
   }
+
+  async update(
+    id: string,
+    data: {
+      fullName?: string;
+      email?: string;
+      password?: string;
+      role?: Role;
+      siteId?: string;
+      roomNumber?: string;
+    },
+  ) {
+    return this.prisma.user.update({
+      where: { id },
+      data,
+      include: {
+        site: true,
+      },
+    });
+  }
+
+  async delete(id: string) {
+    return this.prisma.user.delete({
+      where: { id },
+    });
+  }
 }
