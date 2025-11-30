@@ -65,4 +65,13 @@ export class UserService {
       password: undefined,
     };
   }
+
+  async search(query: string) {
+    const users = await this.userRepository.search(query);
+
+    return users.map((user) => ({
+      ...user,
+      password: undefined,
+    }));
+  }
 }

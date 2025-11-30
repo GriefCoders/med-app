@@ -39,4 +39,50 @@ export class UserRepository {
       },
     });
   }
+
+  async search(query: string) {
+    const normalizedQuery = query.trim();
+
+    if (!normalizedQuery) {
+      return this.prisma.user.findMany({
+        include: {
+          site: true,
+        },
+        orderBy: {
+          fullName: 'asc',
+        },
+      });
+    }
+
+    return this.prisma.user.findMany({
+      where: {
+        OR: [
+          {
+            fullName: {
+              contains: normalizedQuery,
+              mode: 'insensitive',
+            },
+          },
+          {
+            email: {
+              contains: normalizedQuery,
+              mode: 'insensitive',
+            },
+          },
+          {
+            roomNumber: {
+              contains: normalizedQuery,
+              mode: 'insensitive',
+            },
+          },
+        ],
+      },
+      include: {
+        site: true,
+      },
+      orderBy: {
+        fullName: 'asc',
+      },
+    });
+  }
 }
