@@ -36,7 +36,6 @@ export class UserController {
 
   @Get('me')
   @UseGuards(RolesGuard)
-  @Roles(Role.USER)
   async getMe(@DecodeUser() user: User & { password: string | undefined }) {
     return {
       ...user,
