@@ -47,18 +47,6 @@ export class ServiceRequestService {
       }
     }
 
-    const freeEngineer = await this.prisma.user.findFirst({
-      where: {
-        role: Role.ENGINEER,
-        siteId: user.siteId,
-        assignedRequests: {
-          none: {
-            status: ServiceRequestStatus.IN_PROGRESS,
-          },
-        },
-      },
-    });
-
     return this.repository.create({
       summary: dto.summary,
       description: dto.description,
@@ -73,11 +61,6 @@ export class ServiceRequestService {
       site: {
         connect: { id: user.siteId },
       },
-      assignee: freeEngineer
-        ? {
-            connect: { id: freeEngineer.id },
-          }
-        : undefined,
       status: ServiceRequestStatus.OPEN,
     });
   }
@@ -107,8 +90,14 @@ export class ServiceRequestService {
       throw new NotFoundException('Заявка не найдена');
     }
 
-    if (user.role !== Role.ADMIN && request.siteId !== user.siteId) {
+    if (user.role === Role.ENGINEER && request.siteId !== user.siteId) {
       throw new ForbiddenException('Недостаточно прав для изменения заявки');
+    }
+
+    if (user.role === Role.USER && request.senderId !== user.id) {
+      throw new ForbiddenException(
+        'Вы можете изменять только собственные заявки',
+      );
     }
 
     if (dto.equipmentId) {
@@ -151,6 +140,7 @@ export class ServiceRequestService {
 
     return this.repository.update(id, {
       status: dto.status,
+      comment: dto.comment ?? undefined,
     });
   }
 
@@ -159,6 +149,10 @@ export class ServiceRequestService {
 
     if (!request) {
       throw new NotFoundException('Заявка не найдена');
+    }
+
+    if (request.assigneeId) {
+      throw new ForbiddenException('У заявки уже есть назначенный инженер');
     }
 
     const assignee = await this.userService.findOneById(dto.assigneeId);
@@ -204,5 +198,33 @@ export class ServiceRequestService {
     }
 
     return this.repository.getStats(where);
+  }
+
+  async delete(id: string, user: User) {
+    const request = await this.repository.findOneById(id);
+
+    if (!request) {
+      throw new NotFoundException('Заявка не найдена');
+    }
+
+    if (user.role === Role.USER) {
+      if (request.senderId !== user.id) {
+        throw new ForbiddenException(
+          'Вы можете удалять только собственные заявки',
+        );
+      }
+
+      if (request.status !== ServiceRequestStatus.OPEN || request.assigneeId) {
+        throw new ForbiddenException(
+          'Пользователь может удалить только незакрытую заявку без назначенного инженера',
+        );
+      }
+    }
+
+    if (user.role !== Role.ADMIN && user.role !== Role.USER) {
+      throw new ForbiddenException('Недостаточно прав для удаления заявки');
+    }
+
+    await this.repository.delete(id);
   }
 }

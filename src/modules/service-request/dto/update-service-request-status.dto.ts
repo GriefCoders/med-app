@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { ServiceRequestStatus } from 'src/types/service-request-status';
 
 export class UpdateServiceRequestStatusDto {
@@ -10,4 +10,12 @@ export class UpdateServiceRequestStatusDto {
   })
   @IsEnum(ServiceRequestStatus)
   status: ServiceRequestStatus;
+
+  @ApiProperty({
+    description: 'Комментарий к заявке при смене статуса',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  comment?: string;
 }

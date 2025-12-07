@@ -74,6 +74,7 @@ model ServiceRequest {
   description String?              @map("description")
   type        String?              @map("type")
   priority    String?              @map("priority")
+  comment     String?              @map("comment")
   status      ServiceRequestStatus @map("status")
   siteId      String               @map("site_id")
   site        Site                 @relation(fields: [siteId], references: [id])

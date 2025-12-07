@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
   Param,
   Patch,
   Post,
@@ -44,10 +46,7 @@ export class ServiceRequestController {
     required: false,
     description: 'Фильтр по статусу заявки',
   })
-  async getAll(
-    @DecodeUser() user: User,
-    @Query('status') status?: string,
-  ) {
+  async getAll(@DecodeUser() user: User, @Query('status') status?: string) {
     return this.service.getAll(user, status);
   }
 
@@ -56,10 +55,7 @@ export class ServiceRequestController {
   @Roles(Role.USER, Role.ADMIN)
   @ApiOperation({ summary: 'Создание заявки на обслуживание' })
   @ApiBody({ type: CreateServiceRequestDto })
-  async create(
-    @DecodeUser() user: User,
-    @Body() dto: CreateServiceRequestDto,
-  ) {
+  async create(@DecodeUser() user: User, @Body() dto: CreateServiceRequestDto) {
     return this.service.create(dto, user);
   }
 
@@ -114,12 +110,16 @@ export class ServiceRequestController {
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Назначение заявки инженеру' })
   @ApiBody({ type: AssignServiceRequestDto })
-  async assign(
-    @Param('id') id: string,
-    @Body() dto: AssignServiceRequestDto,
-  ) {
+  async assign(@Param('id') id: string, @Body() dto: AssignServiceRequestDto) {
     return this.service.assign(id, dto);
   }
+
+  @Delete(':id')
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  @HttpCode(204)
+  @ApiOperation({ summary: 'Удаление заявки (только администратор)' })
+  async delete(@DecodeUser() user: User, @Param('id') id: string) {
+    await this.service.delete(id, user);
+  }
 }
-
-
