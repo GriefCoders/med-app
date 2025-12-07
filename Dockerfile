@@ -29,8 +29,7 @@ WORKDIR /app
 RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 # Копируем файлы зависимостей
-COPY package*.json ./
-COPY prisma ./prisma/
+COPY . .
 
 # Устанавливаем только продакшн зависимости
 RUN npm ci --only=production
