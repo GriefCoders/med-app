@@ -41,7 +41,7 @@ services:
       - med-app-network
     command: >
       sh -c "
-        npx prisma migrate deploy &&
+        npx prisma db push &&
         npx prisma db seed &&
         npm run start:prod
       "
