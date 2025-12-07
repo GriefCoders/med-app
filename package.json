@@ -12,7 +12,7 @@
     "build": "nest build",
     "start:dev": "nest start --watch",
     "seed": "prisma db seed",
-    "start": "node dist/main",
+    "start": "npx prisma db push && npx prisma db seed && node dist/main",
     "reset": "prisma migrate reset --force"
   },
   "dependencies": {
