@@ -41,7 +41,9 @@ services:
       - med-app-network
     command: >
       sh -c "
-        npm run start
+        npx prisma db push &&
+        npx prisma db seed &&
+        node dist/main
       "
 
 volumes:
