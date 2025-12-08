@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:16-alpine
+    image: postgres:16
     container_name: med-app-postgres
     restart: always
     environment:
@@ -16,21 +16,5 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: med-app
-    restart: always
-    ports:
-      - "3000:3000"
-    environment:
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/medapp
-      NODE_ENV: production
-    depends_on:
-      postgres:
-        condition: service_healthy
-
 volumes:
   postgres_data:
